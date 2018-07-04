@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using ROSBridgeLib;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 //The control interface to the robot
 //TODO: To be changed to ROS
@@ -49,6 +50,8 @@ public class RobotInterface : MonoBehaviour
     {
         string robotFileJson = File.ReadAllText(_telerobotConfigPath);
         _telerobotConfigFile = JsonUtility.FromJson<Telerobot_ThetaFile>(robotFileJson);
+
+       // Debug.log(_telerobotConfigFile);
     }
 
     void OnApplicationQuit()
@@ -122,7 +125,11 @@ public class RobotInterface : MonoBehaviour
 
     public void Connect()
     {
-        _rosBridge = new ROSBridgeWebSocketConnection(_telerobotConfigFile.ROSBridgeUri, _telerobotConfigFile.ROSBridgePort, "Telerobot_ThetaS");
+        //adding the ws in the uri is essential : copied this from robotmastercontroller
+        if (!_telerobotConfigFile.RosBridgeUri.StartsWith("ws://"))
+            _telerobotConfigFile.RosBridgeUri = "ws://" + _telerobotConfigFile.RosBridgeUri;
+
+        _rosBridge = new ROSBridgeWebSocketConnection(_telerobotConfigFile.RosBridgeUri, _telerobotConfigFile.RosBridgePort, "Telerobot_ThetaS");
         _rosLocomotionDirect = new ROSLocomotionDirect(ROSAgent.AgentJob.Publisher, _rosBridge, "/cmd_vel");
         _rosBridge.Connect(((s, b) => { Debug.Log(s + " - " + b); }));
         IsConnected = true;

@@ -1,4 +1,4 @@
 {
-	"RosBridgeUri": "192.168.255.40",
-	"RosBridgePort": 9090,
+	"RosBridgeUri": "raspi-ros00",
+	"RosBridgePort": 9090
 }

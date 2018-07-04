@@ -92,7 +92,7 @@ public class RobotMasterController : MonoBehaviour
 
             if (!robotFile.Campuses.Contains(campusId)) continue;
 
-            if (!robotFile.RosBridgeUri.Contains("ws://"))
+            if (!robotFile.RosBridgeUri.StartsWith("ws://"))
                 robotFile.RosBridgeUri = "ws://" + robotFile.RosBridgeUri;
             ;
 

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-//Connecst to the Theta S UVC stiching software and outputs a square image
+//Connects to the Theta S UVC stiching software and outputs a square image
 public class ThetaWebcamStream : MonoBehaviour
 {
     [SerializeField] private MeshRenderer _primarySphere;
@@ -16,11 +16,23 @@ public class ThetaWebcamStream : MonoBehaviour
             _primarySphere.material.mainTexture = _dummyImage;
             return;
         }
-        WebCamTexture mycam = new WebCamTexture();
+
+       
+        
+       WebCamTexture mycam = new WebCamTexture();
         string camName = "THETA UVC FullHD Blender";
         mycam.deviceName = camName;
         _primarySphere.sharedMaterial.mainTexture = mycam;
         _text = mycam;
-        mycam.Play();
+        if (!mycam.isPlaying)
+        {
+            Debug.Log("Playing cam");
+            mycam.Play();
+        }
+        foreach (var variable in WebCamTexture.devices)
+        {
+         
+            Debug.Log(variable.name);
+        }
     }
 }
