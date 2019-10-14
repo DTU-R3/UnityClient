@@ -306,35 +306,43 @@ public class MazeMapController : MonoBehaviour
 
         foreach (JSONObject feature in collection["features"])
         {
-            floor.name = feature["properties"]["floorIds"][0].f.ToString();
-            JSONObject geometry = feature["geometry"];
-            foreach (JSONObject pos in geometry["coordinates"])
+            try
             {
-                foreach (JSONObject coord in pos)
+                floor.name = feature["properties"]["floorIds"][0].f.ToString();
+                JSONObject geometry = feature["geometry"];
+                foreach (JSONObject pos in geometry["coordinates"])
                 {
-                    if (geometry["type"].str == "MultiPolygon")
+                    foreach (JSONObject coord in pos)
                     {
-                        GameObject multiPolygon = new GameObject("mp");
-
-                        List<Transform> mpPoints = new List<Transform>();
-                        foreach (JSONObject multiCoord in coord)
+                        if (geometry["type"].str == "MultiPolygon")
                         {
-                            GameObject pointObject = InstantiatePoint(multiCoord);
-                            mpPoints.Add(pointObject.transform);
+                            GameObject multiPolygon = new GameObject("mp");
+
+                            List<Transform> mpPoints = new List<Transform>();
+                            foreach (JSONObject multiCoord in coord)
+                            {
+                                GameObject pointObject = InstantiatePoint(multiCoord);
+                                mpPoints.Add(pointObject.transform);
+                            }
+
+                            foreach (Transform t in mpPoints)
+                                t.SetParent(multiPolygon.transform, true);
+
+                            points.Add(multiPolygon.transform);
                         }
-
-                        foreach (Transform t in mpPoints)
-                            t.SetParent(multiPolygon.transform, true);
-
-                        points.Add(multiPolygon.transform);
-                    }
-                    else
-                    {
-                        GameObject pointObject = InstantiatePoint(coord);
-                        pointObject.transform.SetParent(floor.transform, true);
-                        points.Add(pointObject.transform);
+                        else
+                        {
+                            GameObject pointObject = InstantiatePoint(coord);
+                            pointObject.transform.SetParent(floor.transform, true);
+                            points.Add(pointObject.transform);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.Log(ex);
+                continue;
             }
         }
 
