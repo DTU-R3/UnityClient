@@ -1,0 +1,11 @@
+{
+	"Campuses": [ 89, 88, 179 ],
+	"RosBridgeUri": "alex-raspi-ros",
+	"RosBridgePort": 9090,
+	"MaxLinearSpeed": 1.0,
+	"MaxAngularSpeed": 1.0,
+	"LinearSpeedParameter": 2.0,
+	"AngularSpeedParameter": 1.0,
+	"PitchSpeedParameter": 1.0,
+	"RollSpeedParameter": 1.0
+}
