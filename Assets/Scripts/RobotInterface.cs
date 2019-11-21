@@ -107,6 +107,14 @@ public class RobotInterface : MonoBehaviour
         IsDriving = true;
         Vector2 movement = new Vector2(controlOutput.y, -controlOutput.x);
 
+        //normalize speed and send data
+        movement = new Vector2(FilterLinearVelocity(movement.x), FilterAngularVelocity(movement.y));
+        // Debug.Log("Normalized Linear speed was :" + movement.x + "Normalized Initial Angular speed was : " +  movement.y);
+
+        _rosLocomotionDirect.PublishData(movement.x, movement.y);
+        _isStopped = false;
+
+        /*
       //  Debug.Log("Intial Linear speed was :" + movement.x + "Initial Angular speed was : " + movement.y);
         //if you are not at the dead zone 
         if (!InsideDeadZone(movement.x, movement.y))
@@ -126,6 +134,7 @@ public class RobotInterface : MonoBehaviour
             _rosLocomotionDirect.PublishData(0, 0);
             _isStopped = false;
         }
+        */
 
     }
 

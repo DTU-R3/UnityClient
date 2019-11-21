@@ -38,6 +38,18 @@ class RobotControlTrackPad : GazeObject
     private float unhoveredTimer = 0;
     private bool ExitingDriveMode = false;
 
+    //Test with gaze vector
+    [SerializeField] private float dist_limit_z1 = 0.1f;
+    [SerializeField] private float dist_limit_z2 = 5f;
+    [SerializeField] private float dist_limit_x1 = 0.3f;
+    [SerializeField] private float dist_limit_x2 = 3f;
+
+    [SerializeField] private float speed_limit_x1 = 0.001f;
+    [SerializeField] private float speed_limit_x2 = 1f;
+    // Exponential function parameters for horizontal acceleration
+    private float fx_a;
+    private float fx_b;
+
 
     protected override void Awake()
     {
@@ -46,7 +58,11 @@ class RobotControlTrackPad : GazeObject
         _border.color = _borderColor;
         _orgText = _text.text;
         _orgDwellTime = _dwellTime;
-        
+
+
+        // Exponential function parameters for horizontal acceleration
+        fx_a = Mathf.Pow(speed_limit_x2 / speed_limit_x1, 1 / (dist_limit_x2 - dist_limit_x1));
+        fx_b = speed_limit_x1 / (Mathf.Pow(fx_a, dist_limit_x1));
     }
 
     protected override void Update()
@@ -143,12 +159,63 @@ class RobotControlTrackPad : GazeObject
     public Vector2 GetControlResult(Vector3 worldPos)
     {
         if (!IsActivated) return Vector2.zero;
+
+        Vector3 gazeVector = worldPos - transform.position;
+        gazeVector = transform.InverseTransformDirection(gazeVector);
         Vector2 controlResult = new Vector2();
+
+        // Limit horizontal control action to vector distances
+        if (Mathf.Abs(gazeVector.x) < dist_limit_x1)
+            controlResult.x = 0f;
+        else if (gazeVector.x > dist_limit_x2)
+            controlResult.x = 1f;
+        else if (gazeVector.x < -dist_limit_x2)
+            controlResult.x = -1f;
+        // If vector is within limits, then use exponential functions to describe steering angle depending on how far away you look vertically
+        else
+        {
+            // Gaze long-range vertically
+            if (gazeVector.z > 1.0f)
+            {
+                if (gazeVector.x < 0)
+                    controlResult.x = -fx_b * Mathf.Pow(fx_a, Mathf.Abs(gazeVector.x)); //controlVector.x = 1 / (dist_limit_x2-dist_limit_x1) * gazeVector.x; //--- Linear function
+                if (gazeVector.x > 0)
+                    controlResult.x = fx_b * Mathf.Pow(fx_a, gazeVector.x);
+            }
+            // Gaze mid-range vertically, slope of exponential function is more aggressive
+            else if (gazeVector.z > 0.6f)
+            {
+                if (gazeVector.x < 0)
+                    controlResult.x = -fx_b * Mathf.Pow(2f * fx_a, Mathf.Abs(gazeVector.x)); //controlVector.x = 1 / (dist_limit_x2-dist_limit_x1) * gazeVector.x; //--- Linear function
+                if (gazeVector.x > 0)
+                    controlResult.x = fx_b * Mathf.Pow(2f * fx_a, gazeVector.x);
+            }
+            // Gaze short-range, set steering angle to max to allow sharp turns with reduced speed
+            else
+            {
+                if (gazeVector.x < 0)
+                    controlResult.x = -1f;
+                if (gazeVector.x > 0)
+                    controlResult.x = 1f;
+            }
+        }
+
+        //If gaze is outside vertical threshold, then no control action
+        if (gazeVector.z > dist_limit_z2 || gazeVector.z  < dist_limit_z1)
+        {
+            controlResult = new Vector2(0, 0);
+        }
+        else
+        { // linear function to describe vertical acceleration
+            controlResult.y = 1 / (dist_limit_z2 - dist_limit_z1) * gazeVector.z;
+        }
+
+        /*Vector2 controlResult = new Vector2();
         Vector3 localSpace = transform.InverseTransformPoint(worldPos);
         Vector2 offsetLocalSpace = (Vector2) localSpace - _zeroOffset;
         controlResult = new Vector2(offsetLocalSpace.x / (_rect.sizeDelta.x / 2), offsetLocalSpace.y / (_rect.sizeDelta.y / 2));
         controlResult = new Vector2(Mathf.Abs(controlResult.x) < _centerZoneSize ? 0 : controlResult.x, Mathf.Abs(controlResult.y) < _centerZoneSize ? 0 : controlResult.y);
-
+        */
         return controlResult;
     }
 
