@@ -41,7 +41,7 @@ public class ThetaWebcamStream : MonoBehaviour
         //Audio stream from microphone
 
         
-        if (audiosource)
+        /*if (audiosource)
         {
             Debug.Log("Found Audiosource");
 
@@ -57,7 +57,7 @@ public class ThetaWebcamStream : MonoBehaviour
         {
             Debug.Log("No audiosource attached to gameobject");
         }
-
+        */
 
         //Debug show microphone devices
         foreach (var mic in Microphone.devices)

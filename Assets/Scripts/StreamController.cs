@@ -37,31 +37,18 @@ public class StreamController : MonoBehaviour
     [SerializeField] private Vector3 _drivingModeRotationalOffset;
     [SerializeField] private FollowObject _projectionCameraFrontFollowObject;
 
-    [Header("Chair Variables")] [SerializeField] private float _chairMaxSpeed = 2;
-    [SerializeField] private float _chairAcceleration = 1;
-    [SerializeField] private float _chairDeaccelerationDistance = 1;
+    [Header("Chair Variables")]
     [SerializeField] private Transform _chair;
     [SerializeField] private Transform _chairFOVE;
-    [SerializeField] private Transform _loopBeginPosition;
-    [SerializeField] private Transform _loopEndPosition;
     [SerializeField] private Transform _chairEndPosition;
-    [SerializeField] private Transform _shaftLid;
     [SerializeField] private FollowObject _rotatingControlsFollow;
     [SerializeField] private FollowObject _seatInterfaceFollow;
 
-    [Space(5)] [Header("Lights")] [SerializeField] private List<Light> _shaftLights;
+    [Space(5)] [Header("Lights")]
     [SerializeField] private List<Light> _domePerimiterLights;
     [SerializeField] private Light _domeTopLight;
 
     public Transform ActiveChair { get; private set; }
-
-    private enum ChairState
-    {
-        Stopped,
-        Accelerating,
-        Moving,
-        Deaccelerating
-    }
 
     private enum CockpitState
     {
@@ -77,7 +64,6 @@ public class StreamController : MonoBehaviour
     private bool _useFOVE;
     private float _currentChairSpeed;
     private float _accelTimer;
-    private ChairState _currentChairState = ChairState.Stopped;
     private CockpitState _currentCockpitState = CockpitState.Ready;
 
     void Awake()
@@ -154,8 +140,6 @@ public class StreamController : MonoBehaviour
                 //TODO: fade anim so it's not as abrupt
                 _currentCockpitState = CockpitState.Ready;
                 ActiveChair.position = _chairEndPosition.position;
-                foreach (Light light in _shaftLights)
-                    light.enabled = false;
                 StartCoroutine(StartUpSequence());
             }
             else
@@ -166,78 +150,6 @@ public class StreamController : MonoBehaviour
 
             yield return new WaitForEndOfFrame();
         }
-    }
-
-    /// <summary>
-    /// Starts animation of ascending the chair into the cockpit to start.
-    /// Loops the chair so that the tube feels endless until a connection has been established.
-    /// </summary>
-    private IEnumerator AscendChair()
-    {
-        while (_currentChairState != ChairState.Stopped)
-        {
-            if (Vector3.Distance(ActiveChair.position, _chairEndPosition.position) < _chairDeaccelerationDistance && _currentChairState != ChairState.Stopped)
-                _currentChairState = ChairState.Deaccelerating;
-
-            if (_currentChairState == ChairState.Accelerating)
-            {
-                _currentChairSpeed = Mathf.Lerp(_currentChairSpeed, _chairMaxSpeed, _accelTimer += _chairAcceleration * Time.deltaTime);
-                if (_currentChairSpeed >= _chairMaxSpeed)
-                {
-                    _currentChairSpeed = _chairMaxSpeed;
-                    _currentChairState = ChairState.Moving;
-                }
-            }
-            else if (_currentChairState == ChairState.Deaccelerating)
-            {
-                _currentChairSpeed = _chairMaxSpeed - _chairMaxSpeed * (_chairDeaccelerationDistance - Vector3.Distance(ActiveChair.position, _chairEndPosition.position)) / _chairDeaccelerationDistance;
-            }
-
-            ActiveChair.Translate(Vector3.up * _currentChairSpeed * Time.deltaTime);
-
-            if (Vector3.Distance(ActiveChair.position, _loopEndPosition.position) < 1f)
-            {
-                if (_isLooping)
-                    LoopChair();
-                else
-                {
-                    _shaftLid.gameObject.SetActive(false);
-                }
-            }
-            if (Vector3.Distance(ActiveChair.position, _chairEndPosition.position) < 0.1f)
-            {
-                _currentChairState = ChairState.Stopped;
-                foreach (Light light in _shaftLights)
-                    light.enabled = false;
-                StartCoroutine(StartUpSequence());
-            }
-            ManageShaftLights();
-            yield return new WaitForEndOfFrame();
-        }
-    }
-
-    /// <summary>
-    /// Turn on and off lights around the chair
-    /// </summary>
-    private void ManageShaftLights()
-    {
-        List<Light> lightsToTurnOn = new List<Light>();
-        List<Light> sortedLights = new List<Light>();
-        foreach (Light light in _shaftLights)
-            if (light.transform.position.y >= ActiveChair.position.y)
-                sortedLights.Add(light);
-
-        sortedLights = _shaftLights.OrderBy(light => Vector3.Distance(light.transform.position, ActiveChair.position)).ToList();
-        lightsToTurnOn = sortedLights.Take(2).ToList();
-        foreach (Light light in _shaftLights)
-            light.enabled = false;
-        foreach (Light light in lightsToTurnOn)
-            light.enabled = true;
-    }
-
-    private void LoopChair()
-    {
-        ActiveChair.position = _loopBeginPosition.position;
     }
 
     /// <summary>
