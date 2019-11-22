@@ -28,7 +28,7 @@ public class StreamController : MonoBehaviour
     [Header("Cameras and Projection")]
     [SerializeField] private bool FeedbackFromCamera = true;
     [SerializeField] private ThetaWebcamStream _cameraStreamUSB;
-    [SerializeField] private QuestionManager _queryManager ;
+    [SerializeField] private QuestionManager _queryManager;
     [SerializeField] private MeshRenderer _icosphere;
     [SerializeField] private MeshRenderer _icosphereDissolve;
     [SerializeField] private MeshRenderer _projectionSphere;
@@ -63,21 +63,28 @@ public class StreamController : MonoBehaviour
         Deaccelerating
     }
 
+    private enum CockpitState
+    {
+        Loading,
+        Ready
+    }
+
 
     private ROSBridgeWebSocketConnection rosbridge;
     private bool _isLooping;
     private bool _isConnected;
-   
+
     private bool _useFOVE;
     private float _currentChairSpeed;
     private float _accelTimer;
     private ChairState _currentChairState = ChairState.Stopped;
+    private CockpitState _currentCockpitState = CockpitState.Ready;
 
     void Awake()
     {
         Instance = this;
         //still use the FOVE even with joystick
-        if (_selectedControlType == ControlType.Eyes || _selectedControlType == ControlType.Head || _selectedControlType==ControlType.Joystick) _useFOVE = true;
+        if (_selectedControlType == ControlType.Eyes || _selectedControlType == ControlType.Head || _selectedControlType == ControlType.Joystick) _useFOVE = true;
         ActiveChair = (_useFOVE) ? _chairFOVE : _chair;
         _chair.gameObject.SetActive(!_useFOVE);
         _chairFOVE.gameObject.SetActive(_useFOVE);
@@ -97,22 +104,22 @@ public class StreamController : MonoBehaviour
         string _configPath = Application.streamingAssetsPath + "/Config/Robots/";
         string[] paths = Directory.GetFiles(_configPath, "VirtualRobot_Arlobot.json");
         string path = paths[0];
-        
+
 
         string robotName = Path.GetFileNameWithoutExtension(path);
         Debug.Log(robotName);
         string robotFileJson = File.ReadAllText(path);
-            RobotConfigFile robotFile = JsonUtility.FromJson<RobotConfigFile>(robotFileJson);
+        RobotConfigFile robotFile = JsonUtility.FromJson<RobotConfigFile>(robotFileJson);
 
 
-            if (!robotFile.RosBridgeUri.StartsWith("ws://"))
-                robotFile.RosBridgeUri = "ws://" + robotFile.RosBridgeUri;
+        if (!robotFile.RosBridgeUri.StartsWith("ws://"))
+            robotFile.RosBridgeUri = "ws://" + robotFile.RosBridgeUri;
 
 
-       // rosbridge = new ROSBridgeWebSocketConnection(robotFile.RosBridgeUri, robotFile.RosBridgePort, robotName);
-    
-       //VirtualRobotController.InitialiseRobot(RobotInterface.Instance._rosBridge, robotFile, robotName);
-       // VirtualRobotController.OverridePositionAndOrientation(VirtualRobotController.gameObject.transform.position, VirtualRobotController.gameObject.transform.rotation);
+        // rosbridge = new ROSBridgeWebSocketConnection(robotFile.RosBridgeUri, robotFile.RosBridgePort, robotName);
+
+        //VirtualRobotController.InitialiseRobot(RobotInterface.Instance._rosBridge, robotFile, robotName);
+        // VirtualRobotController.OverridePositionAndOrientation(VirtualRobotController.gameObject.transform.position, VirtualRobotController.gameObject.transform.rotation);
     }
 
     public void Update()
@@ -120,16 +127,45 @@ public class StreamController : MonoBehaviour
         //manual connect to robot and ascend chair instead of gaze track the button
         if (!_isConnected)
         {
-            if (Input.GetKeyDown(KeyCode.A)){
-               
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                Debug.Log("Test");
                 ConnectToRobot();
                 //SetupVirtualRobot();
 
             }
         }
 
-        
-       
+
+
+    }
+
+    /// <summary>
+    /// Runs connecting animation until connection is established.
+    /// Then moves the chair into the cockpit.
+    /// </summary>
+    private IEnumerator LoadCockpit()
+    {
+        while (_currentCockpitState != CockpitState.Ready)
+        {
+
+            if (_isConnected)
+            {
+                //TODO: fade anim so it's not as abrupt
+                _currentCockpitState = CockpitState.Ready;
+                ActiveChair.position = _chairEndPosition.position;
+                foreach (Light light in _shaftLights)
+                    light.enabled = false;
+                StartCoroutine(StartUpSequence());
+            }
+            else
+            {
+                //TODO: connecting anim
+                Debug.Log("Connecting...");
+            }
+
+            yield return new WaitForEndOfFrame();
+        }
     }
 
     /// <summary>
@@ -288,16 +324,22 @@ public class StreamController : MonoBehaviour
             _cameraStreamUSB.StartStream();
         else { }
 
-        _currentChairState = ChairState.Accelerating;
-        StartCoroutine(AscendChair());
+        //_currentChairState = ChairState.Accelerating;
+        //StartCoroutine(AscendChair());
+        //TODO: delete anything related to the ascending chair anim
+        _currentCockpitState = CockpitState.Loading;
+        StartCoroutine(LoadCockpit());
 
         //connect to the appropriate controller
         if (VirtualEnvironment)
         {
+            Debug.Log("connecting to the appropriate controller");
             VirtualUnityController.Instance.Connect();
         }
-        else { 
-             RobotInterface.Instance.Connect();
+        else
+        {
+            Debug.Log("NOT connecting to the appropriate controller");
+            RobotInterface.Instance.Connect();
         }
 
         //what about older projects?
@@ -305,10 +347,10 @@ public class StreamController : MonoBehaviour
         {
             _queryManager.EnableManager();
         }
-        
+
         if (GazeTrackingDataManager.Instance)
-         GazeTrackingDataManager.Instance.EnableManager();
-     
+            GazeTrackingDataManager.Instance.EnableManager();
+
         //TODO: When online connection is put in, uncomment this
         //_isLooping = true;
         _isConnected = true;
