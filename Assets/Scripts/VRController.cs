@@ -156,6 +156,11 @@ public class VRController : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
+
+            //Test
+            if (hit.collider.gameObject.layer == 16)
+                FindObjectOfType<GoToGazePlane>().UpdatePoint(hit);
+
             GazeObject gazeObject = hit.collider.GetComponent<GazeObject>();
             if (gazeObject == null)
             {
