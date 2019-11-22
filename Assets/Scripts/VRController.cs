@@ -37,7 +37,7 @@ public class VRController : MonoBehaviour
     }
 
     //Gets point where user is looking every frame and interacts with any intersecting gazeobjects if possible
-    void Update()
+    void FixedUpdate()
     {
         if (!_initialized) return;
         if (Input.GetKeyDown(KeyCode.H))
