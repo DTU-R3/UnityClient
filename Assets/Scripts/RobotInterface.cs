@@ -129,6 +129,27 @@ public class RobotInterface : MonoBehaviour
 
     }
 
+    //Commands with eye tracking
+    private void SendCommandToRobot2(Vector2 movement)
+    {
+        IsDriving = movement != Vector2.zero;
+
+        if (movement.x > MaximumLinearVelocity) movement.x = MaximumLinearVelocity;
+        else if (movement.x < 0) movement.x = -BackwardsVelocity;
+
+
+        if (Mathf.Abs(movement.y) > MaximumAngularVelocity)
+        {
+            if (movement.y < 0) movement.y = -MaximumAngularVelocity;
+            else movement.y = MaximumAngularVelocity;
+
+        }
+
+        _rosLocomotionDirect.PublishData(movement.x, movement.y);
+        _isStopped = false;
+
+    }
+
     //Commands with joystick -- This should not be called every frame for 0 input maybe
     public void DirectCommandRobot(Vector2 JoystickInput)
     {
@@ -186,7 +207,7 @@ public class RobotInterface : MonoBehaviour
         //}
         _timer = 0;
 
-         if (AllowRobotCommands) SendCommandToRobot(controlOutput);
+         if (AllowRobotCommands) SendCommandToRobot2(controlOutput);
     }
 
     public void SetParkingBrake(bool isOn)
