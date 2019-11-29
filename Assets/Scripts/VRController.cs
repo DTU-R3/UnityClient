@@ -156,49 +156,28 @@ public class VRController : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
-           /* //Test
-            GoToGazePlane plane = FindObjectOfType<GoToGazePlane>();
-            if (hit.collider.gameObject.layer == 16 && plane)
+            //Test
+            if (hit.collider.gameObject.layer == 16)
             {
-                plane.UpdatePoint(hit);
+                Debug.Log("Htting!! "+hit.collider.name);
+                GoToGazeSphere sphere = FindObjectOfType<GoToGazeSphere>();
+                sphere.UpdatePoint(hit);
+
+                //Control result is provided on hit. This is updated for both cases of input
+                controlResult = sphere.GetControlResult();
+
+                if (RobotInterface.Instance.IsConnected)
+                {
+                    RobotInterface.Instance.SendCommand(controlResult);
+                }
+                else { Debug.Log("RobotInterface controller is not connected"); }
 
             }
-
-            if (plane)
-            {
-                
-                //Control result is provided on hit. This is updated for both cases of input
-                controlResult = plane.GetControlResult();
-
-                if (StreamController.Instance.VirtualEnvironment)
-                {
-
-                    if (VirtualUnityController.Instance.IsActive)
-                    {
-                        // Debug.Log("Sending gaze command to robot");
-                        VirtualUnityController.Instance.GazeCommand(controlResult);
-                        plane.MoveWaypoint(controlResult);
-                    }
-                    else { Debug.Log("VirtualUnityController is not connected"); }
-
-                }
-                // Othewise send it to the robotinterface
-                else
-                {
-                    if (RobotInterface.Instance.IsConnected)
-                    {
-                        RobotInterface.Instance.SendCommand(controlResult);
-                        //plane.MoveWaypoint(controlResult);
-                    }
-                    else { Debug.Log("RobotInterface controller is not connected"); }
-
-                }
-            }*/
 
             GazeObject gazeObject = hit.collider.GetComponent<GazeObject>();
             if (gazeObject == null)
             {
-                ResetHoveredObject();
+                //ResetHoveredObject();
                 return;
             }
 
