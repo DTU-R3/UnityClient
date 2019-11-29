@@ -8265,7 +8265,7 @@ GameObject:
   - component: {fileID: 579447181}
   m_Layer: 16
   m_Name: GazeSphere
-  m_TagString: Untagged
+  m_TagString: GoToGaze
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8295,10 +8295,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dfca77cf43dae84f8d2335244b6f3b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _dwellTime: 0
+  _oneTimeUse: 0
+  _retainAccumulatedDwell: 0
+  _useToggle: 0
+  _resetOnUnhover: 1
+  _startStatus: 0
+  _onActivate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   _wayPoint: {fileID: 958581184}
   _minNumOfPoints: 30
   _verificationRadius: 0.5
   _sphereRadius: 7
+  _zeroOffset: {x: 0, y: 0}
+  _deadZone: {x: 0, y: 0}
+  _centerZoneSize: 0.1
+  _overlayContainer: {fileID: 0}
+  _horizontalBar: {fileID: 0}
+  _verticalBar: {fileID: 0}
+  _grazePeriod: 2
+  _lowTimerPeriod: 5
+  _grazePeriodTimer: 0
+  _lowTimerPeriodTimer: 1.5
+  MaxUnhoverTimer: 1
+  DisconnectFromRobot: 0
 --- !u!23 &579447179
 MeshRenderer:
   m_ObjectHideFlags: 0
