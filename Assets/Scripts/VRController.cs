@@ -157,21 +157,17 @@ public class VRController : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             /*//Test
-            if (hit.collider.gameObject.layer == 16)
+            if (hit.collider.gameObject.name == "ViewportContainer")
             {
-                Debug.Log("Htting!! "+hit.collider.name);
-                GoToGazeSphere sphere = FindObjectOfType<GoToGazeSphere>();
-                sphere.UpdatePoint(hit);
-
-                //Control result is provided on hit. This is updated for both cases of input
-                controlResult = sphere.GetControlResult();
-
-                if (RobotInterface.Instance.IsConnected)
+                BoxCollider col = (BoxCollider)hit.collider;
+                Vector3 point = col.transform.InverseTransformPoint(hit.point);
+                point = new Vector2((point.x + col.size.x / 2)/col.size.x, (point.y + col.size.y / 2) / col.size.y);
+                Ray ray2 = viewportCam.ViewportPointToRay(point);
+                RaycastHit hit2;
+                if (Physics.Raycast(ray2, out hit2))
                 {
-                    RobotInterface.Instance.SendCommand(controlResult);
+                    GameObject.CreatePrimitive(PrimitiveType.Sphere).transform.position = hit2.point;
                 }
-                else { Debug.Log("RobotInterface controller is not connected"); }
-
             }*/
 
             GazeObject gazeObject = hit.collider.GetComponent<GazeObject>();

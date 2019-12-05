@@ -35,6 +35,10 @@ public class GuiController : MonoBehaviour
     [SerializeField] private Color _arrowColor;
     [SerializeField] private Color _arrowColorActive;
 
+    [Header("ViewPort Settings")]
+    [SerializeField] private Camera _viewportFrontCamera;
+    [SerializeField] private float _frontCamAspect;
+
     private CommandListController _cmdController;
     private KeyboardController _keyboardController;
     private ChatController _chatController;
@@ -53,6 +57,7 @@ public class GuiController : MonoBehaviour
         _chatController = ChatController.Instance;
         _viewportFrontCanvas = Viewport.Instance.ViewportCanvas.GetComponent<RectTransform>();
         _viewportFrontCanvas = Viewport.Instance.ViewportCanvas.GetComponent<RectTransform>();
+        _viewportFrontCamera.aspect = _frontCamAspect;
         PositionInterfaceElements();
 
         _robotParkingBrake.Activated += OnRobotParkingBrakeActivated;
@@ -105,7 +110,7 @@ public class GuiController : MonoBehaviour
         h = Mathf.Sqrt(h);
         float w = Mathf.Sqrt(Mathf.Pow(_screenDiameter, 2) - Mathf.Pow(h, 2));
         Vector2 screenSize = new Vector2(w, h);
-        _viewportFrontCanvas.sizeDelta = screenSize;
+        _viewportFrontCanvas.sizeDelta = new Vector2(w, w * _frontCamAspect); //Set canvas aspect ratio to the same as the front camera
         _viewportDownCanvas.sizeDelta = Vector2.Scale(screenSize, _downViewSizeMultiplier);
         _viewportDownCanvas.position = _viewportFrontCanvas.position + new Vector3(0, _viewportFrontCanvas.sizeDelta.y / 2, 0);
         _viewportRearCanvas.sizeDelta = Vector2.Scale(screenSize, _rearViewSizeMultiplier);
