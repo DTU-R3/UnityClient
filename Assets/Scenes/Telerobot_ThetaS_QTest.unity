@@ -57462,7 +57462,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dfca77cf43dae84f8d2335244b6f3b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dwellTime: 0
+  _dwellTime: 20
   _oneTimeUse: 0
   _retainAccumulatedDwell: 0
   _useToggle: 0
@@ -92068,7 +92068,7 @@ MonoBehaviour:
   _positionalOffset: {x: 0, y: 0, z: 0}
   _rotation: 1
   _isLocalRotation: 0
-  _rotationalOffset: {x: 20, y: 0, z: 0}
+  _rotationalOffset: {x: 0, y: 0, z: 0}
 --- !u!92 &2111245064
 Behaviour:
   m_ObjectHideFlags: 0
