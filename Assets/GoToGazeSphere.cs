@@ -144,6 +144,9 @@ public class GoToGazeSphere : GazeObject {
 
         if (!IsActivated) return Vector2.zero;
 
+        //If the focuspoint is higher than the middle of the sphere, ignore it
+        if (worldPos.y > transform.position.y) return Vector2.zero;
+
         //Set the waypoint
         _wayPoint.transform.position = worldPos;
         _wayPoint.SetActive(true);

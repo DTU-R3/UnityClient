@@ -23,6 +23,7 @@ public class GuiController : MonoBehaviour
     [SerializeField] private float _maxTurnAmount = 0.4f;
     [SerializeField] private ParkingBrakeButton _robotParkingBrake;
     [SerializeField] private RobotControlTrackPad _robotControlTrackPad;
+    [SerializeField] private GoToGazeSphere _goToGazeSphere;
     [SerializeField] private GazeButton _toggleControlOverlay;
     [SerializeField] private RectTransform _viewportDownCanvas;
     [SerializeField] private RectTransform _viewportRearCanvas;
@@ -110,11 +111,11 @@ public class GuiController : MonoBehaviour
         _viewportRearCanvas.sizeDelta = Vector2.Scale(screenSize, _rearViewSizeMultiplier);
         _viewportRearCanvas.position = _viewportFrontCanvas.position - new Vector3(0, _viewportFrontCanvas.sizeDelta.y / 2, 0);
 
-        h = Mathf.Pow(_robotControlTrackPadDiameter, 2) / (Mathf.Pow(_robotControlTrackPadAspectRatio, 2) + 1);
-        h = Mathf.Sqrt(h);
-        w = Mathf.Sqrt(Mathf.Pow(_robotControlTrackPadDiameter, 2) - Mathf.Pow(h, 2));
-        _robotControlTrackPad.SetSize(new Vector2(w, h));
-        _robotControlTrackPad.SetOverlayVisibility(false);
+//        h = Mathf.Pow(_robotControlTrackPadDiameter, 2) / (Mathf.Pow(_robotControlTrackPadAspectRatio, 2) + 1);
+//        h = Mathf.Sqrt(h);
+//        w = Mathf.Sqrt(Mathf.Pow(_robotControlTrackPadDiameter, 2) - Mathf.Pow(h, 2));
+//        _robotControlTrackPad.SetSize(new Vector2(w, h));
+//        _robotControlTrackPad.SetOverlayVisibility(false);
 
         Quaternion orgRot = _viewportFrontCanvas.root.rotation;
 
@@ -194,7 +195,8 @@ public class GuiController : MonoBehaviour
 
     public void SetRobotControlVisibility(bool isVisible)
     {
-        _robotControlTrackPad.gameObject.SetActive(isVisible);
+        _goToGazeSphere.gameObject.SetActive(isVisible);
+//        _robotControlTrackPad.gameObject.SetActive(isVisible);
     }
 
     public void SetSeatControlVisibility(bool isVisible)
