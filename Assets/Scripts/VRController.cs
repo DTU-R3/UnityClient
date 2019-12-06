@@ -156,7 +156,7 @@ public class VRController : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
-            /*//Test
+            /*//Test if hit is possible through a viewcontainer
             if (hit.collider.gameObject.name == "ViewportContainer")
             {
                 BoxCollider col = (BoxCollider)hit.collider;
@@ -177,197 +177,17 @@ public class VRController : MonoBehaviour
                 return;
             }
 
-            /*// For this reason we also check if the tag of the gazeobject is the correct one 
-            RobotControlTrackPad robotControl = gazeObject.GetComponent<RobotControlTrackPad>();
-            if (robotControl != null && gazeObject.CompareTag("EyeControlPanel"))
+            if (gazeObject is GoToGazeSphere)
             {
-                //Control result is provided on hit. This is updated for both cases of input
-                controlResult = robotControl.GetControlResult(hit.point);
-                
-                //If the robotcontrols are activated and the eye tracking is used for motion then send the command to the appropriate controller
-                if (robotControl.IsActivated & !robotControl.IsExternallyDisabled() && 
-                    _selectedControlType==StreamController.ControlType.Eyes )
-                {
-                    if (StreamController.Instance.VirtualEnvironment)
-                    {
-                        
-                        if (VirtualUnityController.Instance.IsActive)
-                        {
-                           // Debug.Log("Sending gaze command to robot");
-                            VirtualUnityController.Instance.GazeCommand(controlResult);
-                        }
-                        else{Debug.Log("VirtualUnityController is not connected"); }
-
-                    }
-                    // Othewise send it to the robotinterface
-                    else
-                    {
-                        if (RobotInterface.Instance.IsConnected)
-                        {
-                            RobotInterface.Instance.SendCommand(controlResult);
-                        }
-                        else { Debug.Log("RobotInterface controller is not connected"); }
-
-                    }
-                    //Instead of robotinterface here 
-                }
-
-                //---Joystick Input---
-                else if (robotControl.IsActivated & !robotControl.IsExternallyDisabled() &&
-                         _selectedControlType == StreamController.ControlType.Joystick)
-                {
-                    //   Joystick input
-                    Vector2 JoyInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-
-                    //if the virtual environment is on, send the command to the VirtualUnityController    
-                    if (StreamController.Instance.VirtualEnvironment)
-                    {
-                        if (VirtualUnityController.Instance.IsActive)
-                        {
-
-                            VirtualUnityController.Instance.JoystickCommand(JoyInput);
-                        }
-                    }
-                    // Othewise send it to the robotinterface
-                    else
-                    {
-                        if (RobotInterface.Instance.IsConnected)
-                        {
-                            RobotInterface.Instance.DirectCommandRobot(JoyInput);
-                        }
-
-                    }
-                }
-
-            }*/
-            // For this reason we also check if the tag of the gazeobject is the correct one 
-            /*GoToGazePlane gtgPlane = gazeObject.GetComponent<GoToGazePlane>();
-            if (gtgPlane != null && gazeObject.CompareTag("GoToGaze"))
+                GoToGaze(gazeObject, hit.point);
+            }
+            else if (gazeObject is GoToGazeButton)
             {
-                //Control result is provided on hit. This is updated for both cases of input
-                controlResult = gtgPlane.GetControlResult(hit.point);
-
-                //If the robotcontrols are activated and the eye tracking is used for motion then send the command to the appropriate controller
-                if (gtgPlane.IsActivated & !gtgPlane.IsExternallyDisabled() &&
-                    _selectedControlType == StreamController.ControlType.Eyes)
-                {
-                    if (StreamController.Instance.VirtualEnvironment)
-                    {
-
-                        if (VirtualUnityController.Instance.IsActive)
-                        {
-                            // Debug.Log("Sending gaze command to robot");
-                            VirtualUnityController.Instance.GazeCommand(controlResult);
-                            gtgPlane.MoveWaypoint(controlResult);
-                        }
-                        else { Debug.Log("VirtualUnityController is not connected"); }
-
-                    }
-                    // Othewise send it to the robotinterface
-                    else
-                    {
-                        if (RobotInterface.Instance.IsConnected)
-                        {
-                            RobotInterface.Instance.SendCommand(controlResult);
-                            gtgPlane.MoveWaypoint(controlResult);
-                        }
-                        else { Debug.Log("RobotInterface controller is not connected"); }
-
-                    }
-                    //Instead of robotinterface here 
-                }
-
-                //---Joystick Input---
-                else if (gtgPlane.IsActivated & !gtgPlane.IsExternallyDisabled() &&
-                         _selectedControlType == StreamController.ControlType.Joystick)
-                {
-                    //   Joystick input
-                    Vector2 JoyInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-
-                    //if the virtual environment is on, send the command to the VirtualUnityController    
-                    if (StreamController.Instance.VirtualEnvironment)
-                    {
-                        if (VirtualUnityController.Instance.IsActive)
-                        {
-
-                            VirtualUnityController.Instance.JoystickCommand(JoyInput);
-                        }
-                    }
-                    // Othewise send it to the robotinterface
-                    else
-                    {
-                        if (RobotInterface.Instance.IsConnected)
-                        {
-                            RobotInterface.Instance.DirectCommandRobot(JoyInput);
-                        }
-
-                    }
-                }
-
-            }*/
-            GoToGazeSphere gtgSphere = gazeObject.GetComponent<GoToGazeSphere>();
-            if (gtgSphere != null && gazeObject.CompareTag("GoToGaze"))
+                GoToGazeBtn(gazeObject);
+            }
+            else if (gazeObject is RobotControlTrackPad)
             {
-                //Control result is provided on hit. This is updated for both cases of input
-                controlResult = gtgSphere.GetControlResult(hit.point);
-
-                //If the robotcontrols are activated and the eye tracking is used for motion then send the command to the appropriate controller
-                if (gtgSphere.IsActivated & !gtgSphere.IsExternallyDisabled() &&
-                    _selectedControlType == StreamController.ControlType.Eyes)
-                {
-                    if (StreamController.Instance.VirtualEnvironment)
-                    {
-
-                        if (VirtualUnityController.Instance.IsActive)
-                        {
-                            // Debug.Log("Sending gaze command to robot");
-                            VirtualUnityController.Instance.GazeCommand(controlResult);
-                            gtgSphere.MoveWaypoint(controlResult);
-                        }
-                        else { Debug.Log("VirtualUnityController is not connected"); }
-
-                    }
-                    // Othewise send it to the robotinterface
-                    else
-                    {
-                        if (RobotInterface.Instance.IsConnected)
-                        {
-                            RobotInterface.Instance.SendCommand(controlResult);
-                            //gtgSphere.MoveWaypoint(controlResult);
-                        }
-                        else { Debug.Log("RobotInterface controller is not connected"); }
-
-                    }
-                    //Instead of robotinterface here 
-                }
-
-                //---Joystick Input---
-                else if (gtgSphere.IsActivated & !gtgSphere.IsExternallyDisabled() &&
-                         _selectedControlType == StreamController.ControlType.Joystick)
-                {
-                    //   Joystick input
-                    Vector2 JoyInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-
-                    //if the virtual environment is on, send the command to the VirtualUnityController    
-                    if (StreamController.Instance.VirtualEnvironment)
-                    {
-                        if (VirtualUnityController.Instance.IsActive)
-                        {
-
-                            VirtualUnityController.Instance.JoystickCommand(JoyInput);
-                        }
-                    }
-                    // Othewise send it to the robotinterface
-                    else
-                    {
-                        if (RobotInterface.Instance.IsConnected)
-                        {
-                            RobotInterface.Instance.DirectCommandRobot(JoyInput);
-                        }
-
-                    }
-                }
-
+                RobotCOntrolTrackPad(gazeObject, hit.point);
             }
             else
             {
@@ -436,5 +256,173 @@ public class VRController : MonoBehaviour
     {
 
         return controlResult;
+    }
+
+    private void RobotCOntrolTrackPad(GazeObject gazeObject, Vector3 point)
+    {
+        // For this reason we also check if the tag of the gazeobject is the correct one 
+        RobotControlTrackPad robotControl = gazeObject.GetComponent<RobotControlTrackPad>();
+        if (robotControl != null && gazeObject.CompareTag("EyeControlPanel"))
+        {
+            //Control result is provided on hit. This is updated for both cases of input
+            controlResult = robotControl.GetControlResult(point);
+
+            //If the robotcontrols are activated and the eye tracking is used for motion then send the command to the appropriate controller
+            if (robotControl.IsActivated & !robotControl.IsExternallyDisabled() &&
+                _selectedControlType == StreamController.ControlType.Eyes)
+            {
+                if (StreamController.Instance.VirtualEnvironment)
+                {
+
+                    if (VirtualUnityController.Instance.IsActive)
+                    {
+                        // Debug.Log("Sending gaze command to robot");
+                        VirtualUnityController.Instance.GazeCommand(controlResult);
+                    }
+                    else { Debug.Log("VirtualUnityController is not connected"); }
+
+                }
+                // Othewise send it to the robotinterface
+                else
+                {
+                    if (RobotInterface.Instance.IsConnected)
+                    {
+                        RobotInterface.Instance.SendCommand(controlResult);
+                    }
+                    else { Debug.Log("RobotInterface controller is not connected"); }
+
+                }
+                //Instead of robotinterface here 
+            }
+
+            //---Joystick Input---
+            else if (robotControl.IsActivated & !robotControl.IsExternallyDisabled() &&
+                     _selectedControlType == StreamController.ControlType.Joystick)
+            {
+                //   Joystick input
+                Vector2 JoyInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+
+                //if the virtual environment is on, send the command to the VirtualUnityController    
+                if (StreamController.Instance.VirtualEnvironment)
+                {
+                    if (VirtualUnityController.Instance.IsActive)
+                    {
+
+                        VirtualUnityController.Instance.JoystickCommand(JoyInput);
+                    }
+                }
+                // Othewise send it to the robotinterface
+                else
+                {
+                    if (RobotInterface.Instance.IsConnected)
+                    {
+                        RobotInterface.Instance.DirectCommandRobot(JoyInput);
+                    }
+
+                }
+            }
+
+        }
+    }
+
+    private void GoToGazeBtn(GazeObject gazeObject)
+    {
+        GoToGazeButton button = gazeObject.GetComponent<GoToGazeButton>();
+        if (button != null && gazeObject.CompareTag("GoToGaze"))
+        {
+            //Control result is provided on hit. This is updated for both cases of input
+            controlResult = button.GetCommand();
+
+            if (StreamController.Instance.VirtualEnvironment)
+            {
+
+                if (VirtualUnityController.Instance.IsActive)
+                {
+                    // Debug.Log("Sending gaze command to robot");
+                    VirtualUnityController.Instance.GazeCommand(controlResult);
+                }
+                else { Debug.Log("VirtualUnityController is not connected"); }
+
+            }
+            // Othewise send it to the robotinterface
+            else
+            {
+                if (RobotInterface.Instance.IsConnected)
+                {
+                    RobotInterface.Instance.SendCommand(controlResult);
+                }
+                else { Debug.Log("RobotInterface controller is not connected"); }
+
+            }
+
+        }
+    }
+
+    private void GoToGaze(GazeObject gazeObject, Vector3 point)
+    {
+        GoToGazeSphere gtgSphere = gazeObject.GetComponent<GoToGazeSphere>();
+        if (gtgSphere != null && gazeObject.CompareTag("GoToGaze"))
+        {
+            //Control result is provided on hit. This is updated for both cases of input
+            controlResult = gtgSphere.GetControlResult(point);
+
+            //If the robotcontrols are activated and the eye tracking is used for motion then send the command to the appropriate controller
+            if (gtgSphere.IsActivated & !gtgSphere.IsExternallyDisabled() &&
+                _selectedControlType == StreamController.ControlType.Eyes)
+            {
+                if (StreamController.Instance.VirtualEnvironment)
+                {
+
+                    if (VirtualUnityController.Instance.IsActive)
+                    {
+                        // Debug.Log("Sending gaze command to robot");
+                        VirtualUnityController.Instance.GazeCommand(controlResult);
+                        gtgSphere.MoveWaypoint(controlResult);
+                    }
+                    else { Debug.Log("VirtualUnityController is not connected"); }
+
+                }
+                // Othewise send it to the robotinterface
+                else
+                {
+                    if (RobotInterface.Instance.IsConnected)
+                    {
+                        RobotInterface.Instance.SendCommand(controlResult);
+                        //gtgSphere.MoveWaypoint(controlResult);
+                    }
+                    else { Debug.Log("RobotInterface controller is not connected"); }
+
+                }
+                //Instead of robotinterface here 
+            }
+
+            //---Joystick Input---
+            else if (gtgSphere.IsActivated & !gtgSphere.IsExternallyDisabled() &&
+                     _selectedControlType == StreamController.ControlType.Joystick)
+            {
+                //   Joystick input
+                Vector2 JoyInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+
+                //if the virtual environment is on, send the command to the VirtualUnityController    
+                if (StreamController.Instance.VirtualEnvironment)
+                {
+                    if (VirtualUnityController.Instance.IsActive)
+                    {
+
+                        VirtualUnityController.Instance.JoystickCommand(JoyInput);
+                    }
+                }
+                // Othewise send it to the robotinterface
+                else
+                {
+                    if (RobotInterface.Instance.IsConnected)
+                    {
+                        RobotInterface.Instance.DirectCommandRobot(JoyInput);
+                    }
+
+                }
+            }
+
+        }
     }
 }

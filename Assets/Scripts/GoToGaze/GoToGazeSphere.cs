@@ -173,7 +173,7 @@ public class GoToGazeSphere : GazeObject {
         controlResult.x = (dist > _maxLinearVelocity)? _maxLinearVelocity : dist;
         controlResult.y = angle * (1f / 45);
 
-        Debug.Log("G@G says: controlresult = " + controlResult);
+        //Debug.Log("G@G says: controlresult = " + controlResult);
 
         return controlResult;
     }
