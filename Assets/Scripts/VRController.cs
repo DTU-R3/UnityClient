@@ -173,7 +173,7 @@ public class VRController : MonoBehaviour
             GazeObject gazeObject = hit.collider.GetComponent<GazeObject>();
             if (gazeObject == null)
             {
-                //ResetHoveredObject();
+                ResetHoveredObject();
                 return;
             }
 
