@@ -53905,6 +53905,10 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 2917012496341b947b794c1846e43249, type: 3}
+      propertyPath: m_TagString
+      value: GoToGaze
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2917012496341b947b794c1846e43249, type: 3}
   m_IsPrefabAsset: 0
@@ -57462,7 +57466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dfca77cf43dae84f8d2335244b6f3b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dwellTime: 20
+  _dwellTime: 1.5
   _oneTimeUse: 0
   _retainAccumulatedDwell: 0
   _useToggle: 0
