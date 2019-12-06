@@ -141,10 +141,13 @@ public class GoToGazeSphere : GazeObject {
     public Vector2 GetControlResult(Vector3 worldPos)
     {
 
-        if (!IsActivated) return Vector2.zero;
-
-        //If the focuspoint is higher than the middle of the sphere, ignore it
-        if (worldPos.y > transform.position.y - _sphereRadius/6f) return Vector2.zero;
+        //If the focuspoint is higher than the middle of the sphere, ignore it and hide the waypoint
+        if (worldPos.y > transform.position.y - _sphereRadius / 6f)
+        {
+            _wayPoint.transform.position = transform.position;
+            _wayPoint.SetActive(false);
+            return Vector2.zero;
+        }
 
         //Set the waypoint
         _wayPoint.transform.position = worldPos;
@@ -166,7 +169,7 @@ public class GoToGazeSphere : GazeObject {
             return Vector2.zero;
         }
 
-        //Calcualte the corresponding linear and angular speeds
+        //Assign the linear and angular velocities
         controlResult.x = (dist > _maxLinearVelocity)? _maxLinearVelocity : dist;
         controlResult.y = angle * (1f / 45);
 
