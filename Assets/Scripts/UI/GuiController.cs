@@ -72,7 +72,7 @@ public class GuiController : MonoBehaviour
         _toggleControlOverlay.Unhovered += OnToggleControlOverlayActivated;
 
         //Disable to ui we're not using
-        if (!StreamController.Instance.UsingGoToGaze)
+        if (_goToGazeObj && !StreamController.Instance.UsingGoToGaze)
             _goToGazeObj.SetActive(false);
         else
             _robotControlTrackPad.gameObject.SetActive(false);

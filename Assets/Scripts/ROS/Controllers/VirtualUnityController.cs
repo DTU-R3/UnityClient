@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using EZCameraShake;
@@ -291,7 +292,7 @@ public class VirtualUnityController : MonoBehaviour {
 
 
                 VirtualBot.velocity = this.gameObject.transform.right * command.x;
-               
+                Debug.Log(this.gameObject.transform.right * command.x);
                 this.gameObject.transform.Rotate(this.gameObject.transform.up,
                     Mathf.Rad2Deg * Time.deltaTime * command.y, Space.World);
             }
