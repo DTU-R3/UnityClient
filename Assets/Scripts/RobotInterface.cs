@@ -153,6 +153,8 @@ public class RobotInterface : MonoBehaviour
     //Commands with joystick -- This should not be called every frame for 0 input maybe
     public void DirectCommandRobot(Vector2 JoystickInput)
     {
+        TimeLogger.Instance.Start(TimeLogger.TimeLogType.QTest); //Start time logging
+
         //Horizontal = rotation = y , Vertical = LinearMove = x
         Vector2 movement = new Vector2(JoystickInput.y, -JoystickInput.x);
 
@@ -193,7 +195,8 @@ public class RobotInterface : MonoBehaviour
     }
     public void SendCommand(Vector2 controlOutput)
     {
-        
+        TimeLogger.Instance.Start(TimeLogger.TimeLogType.QTest); //Start time logging
+
         if (!IsConnected)
         {
             Debug.Log("RobotInterace not connected");

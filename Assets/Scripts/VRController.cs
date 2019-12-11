@@ -425,4 +425,9 @@ public class VRController : MonoBehaviour
 
         }
     }
+
+    void OnApplicationQuit()
+    {
+        TimeLogger.Instance.Stop();
+    }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using EZCameraShake;
@@ -148,7 +147,8 @@ public class VirtualUnityController : MonoBehaviour {
     {
         if (IsActive)
         {
-     
+            TimeLogger.Instance.Start(TimeLogger.TimeLogType.Virtual); //Start time logging
+
             Vector2 movement = new Vector2(input.y, input.x);
 
            
@@ -235,6 +235,8 @@ public class VirtualUnityController : MonoBehaviour {
 
         if (IsActive)
         {
+            TimeLogger.Instance.Start(TimeLogger.TimeLogType.Virtual); //Start time logging
+
             //map correctly x axis to angular and y axis to linear from the input of the gazepad.
             // no need to reverse 
             Vector2 command = new Vector2(input.y, input.x);
@@ -292,7 +294,7 @@ public class VirtualUnityController : MonoBehaviour {
 
 
                 VirtualBot.velocity = this.gameObject.transform.right * command.x;
-                Debug.Log(this.gameObject.transform.right * command.x);
+               
                 this.gameObject.transform.Rotate(this.gameObject.transform.up,
                     Mathf.Rad2Deg * Time.deltaTime * command.y, Space.World);
             }
