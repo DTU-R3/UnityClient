@@ -177,15 +177,15 @@ public class VRController : MonoBehaviour
                 return;
             }
 
-            if (gazeObject is GoToGazeSphere)
+            if (gazeObject.CompareTag("GoToGaze"))
             {
                 GoToGaze(gazeObject, hit.point);
             }
-            else if (gazeObject is GoToGazeButton)
+            else if (gazeObject.CompareTag("GoToGazeButton"))
             {
                 GoToGazeBtn(gazeObject);
             }
-            else if (gazeObject is RobotControlTrackPad)
+            else if (gazeObject.CompareTag("EyeControlPanel"))
             {
                 RobotCOntrolTrackPad(gazeObject, hit.point);
             }
@@ -262,7 +262,7 @@ public class VRController : MonoBehaviour
     {
         // For this reason we also check if the tag of the gazeobject is the correct one 
         RobotControlTrackPad robotControl = gazeObject.GetComponent<RobotControlTrackPad>();
-        if (robotControl != null && gazeObject.CompareTag("EyeControlPanel"))
+        if (robotControl != null)
         {
             //Control result is provided on hit. This is updated for both cases of input
             controlResult = robotControl.GetControlResult(point);
@@ -328,7 +328,7 @@ public class VRController : MonoBehaviour
     private void GoToGazeBtn(GazeObject gazeObject)
     {
         GoToGazeButton button = gazeObject.GetComponent<GoToGazeButton>();
-        if (button != null && gazeObject.CompareTag("GoToGaze"))
+        if (button != null)
         {
             //Control result is provided on hit. This is updated for both cases of input
             controlResult = button.GetCommand();
@@ -361,7 +361,7 @@ public class VRController : MonoBehaviour
     private void GoToGaze(GazeObject gazeObject, Vector3 point)
     {
         GoToGazeSphere gtgSphere = gazeObject.GetComponent<GoToGazeSphere>();
-        if (gtgSphere != null && gazeObject.CompareTag("GoToGaze"))
+        if (gtgSphere != null)
         {
             //Control result is provided on hit. This is updated for both cases of input
             controlResult = gtgSphere.GetControlResult(point);

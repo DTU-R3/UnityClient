@@ -98,8 +98,8 @@ public class RobotInterface : MonoBehaviour
             return intIntensity.ToString("000");
     }
 
-    //Commands with eye tracking
-    private void SendCommandToRobot(Vector2 controlOutput)
+    //Commands with eye tracking using the track pad as control
+    private void SendTrackpadCommandToRobot(Vector2 controlOutput)
     {
        // Debug.Log("Sending command to robot");
        // Debug.Log("ControlOutput is :" + controlOutput.x +"  " +  controlOutput.y);
@@ -129,8 +129,8 @@ public class RobotInterface : MonoBehaviour
 
     }
 
-    //Commands with eye tracking
-    private void SendCommandToRobot2(Vector2 movement)
+    //Command using linear and angular values 
+    private void SendCommandToRobot(Vector2 movement)
     {
         IsDriving = movement != Vector2.zero;
 
@@ -207,7 +207,13 @@ public class RobotInterface : MonoBehaviour
         //}
         _timer = 0;
 
-         if (AllowRobotCommands) SendCommandToRobot2(controlOutput);
+        if (AllowRobotCommands)
+        {
+            if (StreamController.Instance.UsingGoToGaze)
+                SendCommandToRobot(controlOutput);
+            else
+                SendTrackpadCommandToRobot(controlOutput);
+        }
     }
 
     public void SetParkingBrake(bool isOn)

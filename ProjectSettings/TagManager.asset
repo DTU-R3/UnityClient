@@ -9,6 +9,7 @@ TagManager:
   - Obstacle
   - Wall
   - GoToGaze
+  - GoToGazeButton
   layers:
   - Default
   - TransparentFX

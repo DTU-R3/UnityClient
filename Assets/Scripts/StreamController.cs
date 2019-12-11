@@ -18,9 +18,15 @@ public class StreamController : MonoBehaviour
         Joystick
     }
 
+    public bool UsingGoToGaze
+    {
+        get { return _useGoToGaze; }
+    }
+
     public static StreamController Instance { get; private set; }
 
     [SerializeField] public ControlType _selectedControlType = ControlType.Head;
+    [SerializeField] private bool _useGoToGaze = false;
     [SerializeField] public bool VirtualEnvironment = false;
 
     //public VirtualRobot VirtualRobotController;

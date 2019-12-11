@@ -23,7 +23,7 @@ public class GuiController : MonoBehaviour
     [SerializeField] private float _maxTurnAmount = 0.4f;
     [SerializeField] private ParkingBrakeButton _robotParkingBrake;
     [SerializeField] private RobotControlTrackPad _robotControlTrackPad;
-    [SerializeField] private GoToGazeSphere _goToGazeSphere;
+    [SerializeField] private GameObject _goToGazeObj;
     [SerializeField] private GazeButton _toggleControlOverlay;
     [SerializeField] private RectTransform _viewportDownCanvas;
     [SerializeField] private RectTransform _viewportRearCanvas;
@@ -38,6 +38,8 @@ public class GuiController : MonoBehaviour
     [Header("ViewPort Settings")]
     [SerializeField] private Camera _viewportFrontCamera;
     [SerializeField] private float _frontCamAspect;
+    [Range(-50f, 50f), SerializeField] private float _frontCamAngle;
+    private float _frontCamOldAngle;
 
     private CommandListController _cmdController;
     private KeyboardController _keyboardController;
@@ -57,7 +59,10 @@ public class GuiController : MonoBehaviour
         _chatController = ChatController.Instance;
         _viewportFrontCanvas = Viewport.Instance.ViewportCanvas.GetComponent<RectTransform>();
         _viewportFrontCanvas = Viewport.Instance.ViewportCanvas.GetComponent<RectTransform>();
-        _viewportFrontCamera.aspect = _frontCamAspect;
+        if (StreamController.Instance.UsingGoToGaze)
+            _viewportFrontCamera.aspect = _frontCamAspect;
+
+
         PositionInterfaceElements();
 
         _robotParkingBrake.Activated += OnRobotParkingBrakeActivated;
@@ -66,12 +71,25 @@ public class GuiController : MonoBehaviour
         _robotControlTrackPad.Unhovered += OnTrackpadUnhovered;
         _toggleControlOverlay.Unhovered += OnToggleControlOverlayActivated;
 
+        //Disable to ui we're not using
+        if (!StreamController.Instance.UsingGoToGaze)
+            _goToGazeObj.SetActive(false);
+        else
+            _robotControlTrackPad.gameObject.SetActive(false);
+
         iTween.MoveTo(gameObject, new Hashtable {{"oncomplete", "HideUI"}, {"time", 2}});
     }
 
     void Update()
     {
         CheckControls();
+
+        //Update camera angle if changes are made
+        if (_frontCamOldAngle != _frontCamAngle)
+        {
+            _frontCamOldAngle = _frontCamAngle;
+            _viewportFrontCamera.GetComponent<FollowObject>().SetRotationalOffset(new Vector3(_frontCamAngle, 0, 0));
+        }
     }
 
     void OnRobotParkingBrakeActivated(GazeObject sender)
@@ -110,17 +128,18 @@ public class GuiController : MonoBehaviour
         h = Mathf.Sqrt(h);
         float w = Mathf.Sqrt(Mathf.Pow(_screenDiameter, 2) - Mathf.Pow(h, 2));
         Vector2 screenSize = new Vector2(w, h);
-        _viewportFrontCanvas.sizeDelta = new Vector2(w, w * _frontCamAspect); //Set canvas aspect ratio to the same as the front camera
+        _viewportFrontCanvas.sizeDelta = (StreamController.Instance.UsingGoToGaze) ? new Vector2(w, w * _frontCamAspect) : screenSize;
         _viewportDownCanvas.sizeDelta = Vector2.Scale(screenSize, _downViewSizeMultiplier);
         _viewportDownCanvas.position = _viewportFrontCanvas.position + new Vector3(0, _viewportFrontCanvas.sizeDelta.y / 2, 0);
         _viewportRearCanvas.sizeDelta = Vector2.Scale(screenSize, _rearViewSizeMultiplier);
         _viewportRearCanvas.position = _viewportFrontCanvas.position - new Vector3(0, _viewportFrontCanvas.sizeDelta.y / 2, 0);
 
-//        h = Mathf.Pow(_robotControlTrackPadDiameter, 2) / (Mathf.Pow(_robotControlTrackPadAspectRatio, 2) + 1);
-//        h = Mathf.Sqrt(h);
-//        w = Mathf.Sqrt(Mathf.Pow(_robotControlTrackPadDiameter, 2) - Mathf.Pow(h, 2));
-//        _robotControlTrackPad.SetSize(new Vector2(w, h));
-//        _robotControlTrackPad.SetOverlayVisibility(false);
+        h = Mathf.Pow(_robotControlTrackPadDiameter, 2) / (Mathf.Pow(_robotControlTrackPadAspectRatio, 2) + 1);
+        h = Mathf.Sqrt(h);
+        w = Mathf.Sqrt(Mathf.Pow(_robotControlTrackPadDiameter, 2) - Mathf.Pow(h, 2));
+        _robotControlTrackPad.SetSize(new Vector2(w, h));
+        _robotControlTrackPad.SetOverlayVisibility(false);
+
 
         Quaternion orgRot = _viewportFrontCanvas.root.rotation;
 
@@ -200,8 +219,10 @@ public class GuiController : MonoBehaviour
 
     public void SetRobotControlVisibility(bool isVisible)
     {
-        _goToGazeSphere.gameObject.SetActive(isVisible);
-//        _robotControlTrackPad.gameObject.SetActive(isVisible);
+        if (StreamController.Instance.UsingGoToGaze)
+            _goToGazeObj.SetActive(isVisible);
+        else
+            _robotControlTrackPad.gameObject.SetActive(isVisible);
     }
 
     public void SetSeatControlVisibility(bool isVisible)
